@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Google Snake Remake</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* Custom scrollbar hidden for cleaner UI */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .google-shadow {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        }
+
+        .btn-hover-effect {
+            transition: transform 0.1s ease, filter 0.1s ease;
+        }
+        .btn-hover-effect:hover {
+            filter: brightness(1.08);
+            transform: scale(1.03);
+        }
+        .btn-hover-effect:active {
+            filter: brightness(0.92);
+            transform: scale(0.97);
+        }
+
+        /* Keypad button styling for touch controls */
+        .d-pad-btn {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            touch-action: manipulation;
+        }
+        .d-pad-btn:active {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .setting-option {
+            transition: all 0.15s ease;
+            cursor: pointer;
+        }
+        .setting-option.active {
+            background-color: rgba(255, 255, 255, 0.3);
+            border-color: #FFFFFF !important;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body id="body-theme" class="bg-[#4a752c] min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 text-white select-none transition-colors duration-300">
+
+    <!-- Top Header Bar -->
+    <header id="header-theme" class="w-full max-w-2xl flex items-center justify-between px-4 py-2 bg-[#4a752c] mb-1 transition-colors duration-300">
+        <div class="flex items-center space-x-2">
+            <svg class="w-8 h-8" viewBox="0 0 36 36">
+                <rect width="36" height="36" rx="8" fill="#4285F4"/>
+                <circle cx="18" cy="22" r="8" fill="#EA4335"/>
+                <path d="M18 14 C18 14, 20 10, 24 11 C 22 15, 19 16, 18 17 Z" fill="#34A853"/>
+                <path d="M 6 18 Q 12 10 20 18 T 30 18" fill="none" stroke="#2ecc71" stroke-width="4" stroke-linecap="round"/>
+            </svg>
+            <h1 class="text-2xl font-bold tracking-wide text-white">Snake Remake</h1>
+        </div>
+
+        <button id="sound-btn" title="Toggle Sound" class="p-2 rounded-full hover:bg-white/10 transition">
+            <svg id="sound-on-icon" class="w-7 h-7 fill-current text-white" viewBox="0 0 24 24">
+                <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+            <svg id="sound-off-icon" class="w-7 h-7 fill-current text-red-300 hidden" viewBox="0 0 24 24">
+                <path d="M4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Score Header (Authentic Google Style Header) -->
+    <div id="score-header-theme" class="w-full max-w-2xl bg-[#457026] text-white rounded-t-2xl px-5 py-3 flex justify-between items-center shadow-md transition-colors duration-300">
+        <!-- Current Score with Active Food Icon -->
+        <div class="flex items-center space-x-3">
+            <div id="food-score-icon" class="w-8 h-8 flex items-center justify-center text-2xl">
+                🍎
+            </div>
+            <span id="score-display" class="text-2xl sm:text-3xl font-black">0</span>
+        </div>
+
+        <!-- High Score / Trophy -->
+        <div class="flex items-center space-x-3">
+            <div class="flex items-center space-x-1">
+                <svg class="w-7 h-7 fill-yellow-400 drop-shadow" viewBox="0 0 24 24">
+                    <path d="M19 5h-2V3H7v2H5c-1.1 0-2 .9-2 2v1c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0011 15.9V19H7v2h10v-2h-4v-3.1c2.21-.4 4-2.26 4.39-4.94C19.8 12.63 21 10.55 21 8V7c0-1.1-.9-2-2-2zM5 8V7h2v3.82C5.84 10.4 5 9.3 5 8zm14 0c0 1.3-.84 2.4-2 2.82V7h2v1z"/>
+                </svg>
+            </div>
+            <span id="highscore-display" class="text-2xl sm:text-3xl font-black text-white">0</span>
+        </div>
+    </div>
+
+    <!-- Main Board Frame & Canvas Container -->
+    <div id="board-frame-theme" class="relative w-full max-w-2xl aspect-[17/15] bg-[#578a34] rounded-b-2xl overflow-hidden google-shadow flex items-center justify-center transition-colors duration-300">
+        <!-- Canvas -->
+        <canvas id="game-canvas" class="w-full h-full block"></canvas>
+
+        <!-- Authentic 1:1 Google Snake Start Dialog -->
+        <div id="start-overlay" class="absolute inset-0 bg-black/20 flex flex-col items-center justify-center p-4 z-10">
+            <div class="flex flex-col items-center max-w-xs sm:max-w-sm w-full">
+                <!-- Main Blue Card -->
+                <div class="bg-[#4285F4] rounded-3xl p-5 flex flex-col items-center w-full text-center shadow-2xl relative border-2 border-white/20 mb-3">
+                    
+                    <!-- Authentic Top Stats Bar (Trophy / High Score & Last Round Food / Score) -->
+                    <div class="w-full flex items-center justify-between px-3 py-1.5 mb-2 bg-[#3367d6] rounded-2xl text-white font-black text-lg border border-white/10 shadow-inner">
+                        <!-- High Score / Trophy -->
+                        <div class="flex items-center space-x-2" title="Highest Streak">
+                            <span class="text-2xl drop-shadow">🏆</span>
+                            <span id="start-highscore-display" class="text-xl">0</span>
+                        </div>
+
+                        <!-- Last Score with Selected Food Icon -->
+                        <div class="flex items-center space-x-2" title="Last Round Score">
+                            <span id="start-last-score-icon" class="text-2xl drop-shadow">🍎</span>
+                            <span id="start-last-score-display" class="text-xl">0</span>
+                        </div>
+                    </div>
+
+                    <!-- Authentic Google Snake Banner Art -->
+                    <div class="w-full flex justify-center items-center py-2 mb-3">
+                        <div class="w-full h-28 bg-[#3b78e7] rounded-2xl flex items-center justify-center shadow-inner relative overflow-hidden border-2 border-white/20">
+                            <!-- Red Apple Icon -->
+                            <div id="start-banner-food-icon" class="absolute right-6 top-3 text-2xl drop-shadow-md z-10">🍎</div>
+                            
+                            <!-- Animated Snake Crawling Side to Side across the banner -->
+                            <svg class="w-full h-full absolute inset-0" viewBox="0 0 320 112" preserveAspectRatio="none">
+                                <defs>
+                                    <style>
+                                        @keyframes snakeCrawl {
+                                            0% { transform: translateX(-160px); }
+                                            100% { transform: translateX(340px); }
+                                        }
+                                        .animating-snake {
+                                            animation: snakeCrawl 4s linear infinite;
+                                        }
+                                    </style>
+                                </defs>
+
+                                <!-- Moving Group -->
+                                <g class="animating-snake">
+                                    <!-- Waving Body -->
+                                    <path d="M -80 56 Q -60 30 -40 56 T 0 56 T 40 56" 
+                                          fill="none" stroke="#4671EA" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+                                    
+                                    <!-- Snake Head (Side Profile) -->
+                                    <circle cx="40" cy="56" r="13" fill="#4285F4"/>
+                                    
+                                    <!-- Eye (Side Facing Right) -->
+                                    <circle cx="46" cy="51" r="4" fill="white"/>
+                                    <circle cx="48" cy="51" r="2" fill="black"/>
+
+                                    <!-- Cute Tongue -->
+                                    <path d="M 52 59 Q 60 60 62 57 M 60 60 L 64 63" stroke="#e74c3c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+                                </g>
+                            </svg>
+                        </div>
+                    </div>
+
+                    <!-- Quick Active Settings Indicators Bar -->
+                    <div class="bg-[#3367d6] rounded-full px-4 py-1.5 flex items-center justify-around w-full shadow-inner border border-white/20 text-xl">
+                        <span id="bar-food-icon" title="Fruit">🍎</span>
+                        <span id="bar-speed-icon" title="Speed">🐰</span>
+                        <span id="bar-size-icon" title="Map Size">⬛</span>
+                        <span id="bar-theme-icon" title="Theme">🌿</span>
+                    </div>
+                </div>
+
+                <!-- Action Buttons below the main start UI -->
+                <div class="flex flex-col space-y-2 w-full">
+                    <!-- 1st: PLAY Button -->
+                    <button id="start-btn" class="btn-hover-effect bg-[#4285F4] hover:bg-[#3367d6] text-white py-3 px-6 rounded-full font-black text-lg tracking-wide shadow-lg w-full flex items-center justify-center space-x-2 border-2 border-white/20">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                        <span>PLAY</span>
+                    </button>
+
+                    <!-- 2nd: SETTINGS Button -->
+                    <button id="open-settings-btn" class="btn-hover-effect bg-[#4285F4] hover:bg-[#3367d6] text-white py-3 px-6 rounded-full font-bold text-base tracking-wide shadow-lg w-full flex items-center justify-center space-x-2 border-2 border-white/20" title="Settings">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                        </svg>
+                        <span>SETTINGS</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Popup Dialog (Authentic Google Snake Options Grid) -->
+        <div id="settings-modal" class="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-30 hidden">
+            <div class="bg-[#385922] border-4 border-[#578a34] rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl flex flex-col space-y-4 max-h-[90vh] overflow-y-auto">
+                <h3 class="text-center font-black text-xl tracking-wide uppercase">Game Settings</h3>
+
+                <!-- Row 1: Food Type -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Fruit / Food</label>
+                    <div class="grid grid-cols-4 gap-2 text-2xl max-h-36 overflow-y-auto pr-1">
+                        <button class="setting-option food-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="apple">🍎</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="strawberry">🍓</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="watermelon">🍉</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="orange">🍊</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="lemon">🍋</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="banana">🍌</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="pineapple">🍍</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="grape">🍇</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="cherries">🍒</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="peach">🍑</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="coconut">🥥</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="kiwi">🥝</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="eggplant">🍆</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="carrot">🥕</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="mushroom">🍄</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="cheese">🧀</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="pizza">🍕</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="donut">🍩</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="burger">🍔</button>
+                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="taco">🌮</button>
+                    </div>
+                </div>
+
+                <!-- Row 2: Speed -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Speed</label>
+                    <div class="grid grid-cols-4 gap-2 text-center text-xs font-bold">
+                        <button class="setting-option speed-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-speed="slow">
+                            <span class="text-xl mb-1">🐢</span>
+                            <span>Slow</span>
+                        </button>
+                        <button class="setting-option speed-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-speed="normal">
+                            <span class="text-xl mb-1">🐰</span>
+                            <span>Normal</span>
+                        </button>
+                        <button class="setting-option speed-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-speed="fast">
+                            <span class="text-xl mb-1">⚡</span>
+                            <span>Fast</span>
+                        </button>
+                        <button class="setting-option speed-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-speed="sonic">
+                            <span class="text-xl mb-1">🚀</span>
+                            <span>Sonic</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 3: Grid Size -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Map Size</label>
+                    <div class="grid grid-cols-4 gap-2 text-center text-xs font-bold">
+                        <button class="setting-option size-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-size="tiny">
+                            <span class="text-xl mb-1">▫️</span>
+                            <span>Tiny</span>
+                        </button>
+                        <button class="setting-option size-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-size="small">
+                            <span class="text-xl mb-1">◻️</span>
+                            <span>Small</span>
+                        </button>
+                        <button class="setting-option size-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-size="normal">
+                            <span class="text-xl mb-1">⬛</span>
+                            <span>Normal</span>
+                        </button>
+                        <button class="setting-option size-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-size="large">
+                            <span class="text-xl mb-1">🔳</span>
+                            <span>Large</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 4: Food Count / Multi-Food Spawner -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Food Spawn Count</label>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
+                        <button class="setting-option count-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="1">
+                            <span class="text-xl mb-1">1️⃣</span>
+                            <span>1 Food</span>
+                        </button>
+                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="3">
+                            <span class="text-xl mb-1">3️⃣</span>
+                            <span>3 Foods</span>
+                        </button>
+                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="5">
+                            <span class="text-xl mb-1">5️⃣</span>
+                            <span>5 Foods</span>
+                        </button>
+                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="10">
+                            <span class="text-xl mb-1">🔟</span>
+                            <span>10 Foods</span>
+                        </button>
+                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="shuffle">
+                            <span class="text-xl mb-1">🔀</span>
+                            <span>Shuffled</span>
+                        </button>
+                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="explosion">
+                            <span class="text-xl mb-1">💥</span>
+                            <span>Explosion (>15)</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 5: Themes -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Theme</label>
+                    <div class="grid grid-cols-4 gap-2 text-center text-xs font-bold max-h-36 overflow-y-auto pr-1">
+                        <button class="setting-option theme-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="normal">
+                            <span class="text-xl mb-1">🌿</span>
+                            <span>Normal</span>
+                        </button>
+                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="night">
+                            <span class="text-xl mb-1">🌙</span>
+                            <span>Night</span>
+                        </button>
+                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="snow">
+                            <span class="text-xl mb-1">❄️</span>
+                            <span>Snow</span>
+                        </button>
+                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="volcano">
+                            <span class="text-xl mb-1">🌋</span>
+                            <span>Volcano</span>
+                        </button>
+                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="desert">
+                            <span class="text-xl mb-1">🏜️</span>
+                            <span>Desert</span>
+                        </button>
+                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="forest">
+                            <span class="text-xl mb-1">🌲</span>
+                            <span>Forest</span>
+                        </button>
+                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="world">
+                            <span class="text-xl mb-1">🌍</span>
+                            <span>World</span>
+                        </button>
+                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="ocean">
+                            <span class="text-xl mb-1">🌊</span>
+                            <span>Ocean</span>
+                        </button>
+                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="candy">
+                            <span class="text-xl mb-1">🍭</span>
+                            <span>Candy</span>
+                        </button>
+                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="cyberpunk">
+                            <span class="text-xl mb-1">👾</span>
+                            <span>Cyber</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Row 6: Snake Color Customization -->
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Snake Color</label>
+                    <div class="grid grid-cols-4 gap-2 text-center text-xs font-bold">
+                        <button class="setting-option snake-color-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="theme">
+                            <div class="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 via-green-500 to-red-500"></div>
+                            <span>Auto</span>
+                        </button>
+                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="rainbow">
+                            <div class="w-5 h-5 rounded-full bg-gradient-to-r from-red-500 via-yellow-400 to-indigo-500 animate-pulse"></div>
+                            <span>Rainbow</span>
+                        </button>
+                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="blue">
+                            <div class="w-5 h-5 rounded-full bg-[#4285F4]"></div>
+                            <span>Blue</span>
+                        </button>
+                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="green">
+                            <div class="w-5 h-5 rounded-full bg-[#34A853]"></div>
+                            <span>Green</span>
+                        </button>
+                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="red">
+                            <div class="w-5 h-5 rounded-full bg-[#EA4335]"></div>
+                            <span>Red</span>
+                        </button>
+                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="yellow">
+                            <div class="w-5 h-5 rounded-full bg-[#FBBC05]"></div>
+                            <span>Yellow</span>
+                        </button>
+                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="purple">
+                            <div class="w-5 h-5 rounded-full bg-[#A142F4]"></div>
+                            <span>Purple</span>
+                        </button>
+                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="pink">
+                            <div class="w-5 h-5 rounded-full bg-[#F442B5]"></div>
+                            <span>Pink</span>
+                        </button>
+                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="cyan">
+                            <div class="w-5 h-5 rounded-full bg-[#24C1E0]"></div>
+                            <span>Cyan</span>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="close-settings-btn" class="btn-hover-effect bg-[#4285F4] w-full py-2.5 rounded-full font-bold text-sm tracking-wide shadow-md mt-2">CLOSE</button>
+            </div>
+        </div>
+
+        <!-- Pause Overlay -->
+        <div id="pause-overlay" class="absolute inset-0 bg-black/50 backdrop-blur-[2px] flex flex-col items-center justify-center p-6 z-10 hidden">
+            <div class="bg-[#4285F4] border-4 border-[#3b78e7] rounded-3xl p-6 flex flex-col items-center max-w-xs w-full text-center shadow-2xl">
+                <h2 class="text-3xl font-black mb-6 tracking-wide text-white">PAUSED</h2>
+                <button id="resume-btn" class="btn-hover-effect bg-[#34A853] text-white font-bold text-lg py-3 px-8 rounded-full shadow-lg w-full mb-3">
+                    RESUME
+                </button>
+                <button id="pause-restart-btn" class="btn-hover-effect bg-[#e74c3c] text-white font-bold text-base py-2 px-6 rounded-full w-full">
+                    MAIN MENU
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Over Overlay -->
+        <div id="gameover-overlay" class="absolute inset-0 bg-black/60 backdrop-blur-[3px] flex flex-col items-center justify-center p-6 z-10 hidden">
+            <div class="bg-[#4a752c] border-4 border-[#e74c3c] rounded-3xl p-6 flex flex-col items-center max-w-xs w-full text-center shadow-2xl">
+                <div class="w-16 h-16 bg-[#385922] rounded-full flex items-center justify-center mb-3">
+                    <svg class="w-10 h-10" viewBox="0 0 50 50">
+                        <circle cx="25" cy="25" r="18" fill="#e74c3c"/>
+                        <path d="M15 17 L21 23 M21 17 L15 23" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M29 17 L35 23 M35 17 L29 23" stroke="white" stroke-width="3" stroke-linecap="round"/>
+                        <path d="M 18 32 Q 25 26 32 32" stroke="white" stroke-width="3" stroke-linecap="round" fill="none"/>
+                    </svg>
+                </div>
+                
+                <h2 class="text-3xl font-black text-white mb-1">GAME OVER</h2>
+                <p id="final-score" class="text-lg font-bold text-yellow-300 mb-6">Score: 0</p>
+
+                <button id="restart-btn" class="btn-hover-effect bg-[#34A853] text-white font-bold text-lg py-3 px-8 rounded-full shadow-lg w-full flex items-center justify-center space-x-2">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+                    </svg>
+                    <span>PLAY AGAIN</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- On-Screen Controls for Mobile -->
+    <div class="w-full max-w-xs mt-3 mb-1 flex flex-col items-center sm:hidden">
+        <button id="btn-up" class="d-pad-btn w-14 h-14 rounded-2xl flex items-center justify-center mb-1 text-2xl font-bold shadow-md">▲</button>
+        <div class="flex justify-between w-full max-w-[200px] mb-1">
+            <button id="btn-left" class="d-pad-btn w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-md">◀</button>
+            <button id="btn-right" class="d-pad-btn w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-md">▶</button>
+        </div>
+        <button id="btn-down" class="d-pad-btn w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-md">▼</button>
+    </div>
+
+    <footer class="mt-auto py-1 text-center text-xs text-green-200/80 font-medium">
+        Press Space to Pause • Arrow Keys or WASD to Move
+    </footer>
+
+    <!-- Game Script Logic -->
+    <script>
+        // Web Audio Synthesizer for Retro Sound Effects
+        class SoundSystem {
+            constructor() {
+                this.ctx = null;
+                this.enabled = true;
+            }
+
+            init() {
+                if (!this.ctx) {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    this.ctx = new AudioContext();
+                }
+            }
+
+            playEatSound() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(320, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(640, this.ctx.currentTime + 0.08);
+                    
+                    gain.gain.setValueAtTime(0.2, this.ctx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.08);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.08);
+                } catch(e){}
+            }
+
+            playTurnSound() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(160, this.ctx.currentTime);
+                    osc.frequency.setValueAtTime(200, this.ctx.currentTime + 0.03);
+                    
+                    gain.gain.setValueAtTime(0.06, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.04);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.04);
+                } catch(e){}
+            }
+
+            playDieSound() {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const gain = this.ctx.createGain();
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, this.ctx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.25);
+                    
+                    gain.gain.setValueAtTime(0.25, this.ctx.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.01, this.ctx.currentTime + 0.25);
+
+                    osc.connect(gain);
+                    gain.connect(this.ctx.destination);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + 0.25);
+                } catch(e){}
+            }
+        }
+
+        const canvas = document.getElementById('game-canvas');
+        const ctx = canvas.getContext('2d');
+        const sound = new SoundSystem();
+
+        // UI Element References
+        const scoreDisplay = document.getElementById('score-display');
+        const highscoreDisplay = document.getElementById('highscore-display');
+        const startOverlay = document.getElementById('start-overlay');
+        const pauseOverlay = document.getElementById('pause-overlay');
+        const gameoverOverlay = document.getElementById('gameover-overlay');
+        const finalScoreText = document.getElementById('final-score');
+        const foodScoreIcon = document.getElementById('food-score-icon');
+        const settingsModal = document.getElementById('settings-modal');
+        const startHighscoreDisplay = document.getElementById('start-highscore-display');
+        const startLastScoreDisplay = document.getElementById('start-last-score-display');
+        const startLastScoreIcon = document.getElementById('start-last-score-icon');
+        const startBannerFoodIcon = document.getElementById('start-banner-food-icon');
+
+        // Game Settings Variables
+        let selectedFood = 'apple';
+        let speedMs = 120;
+        let gridCols = 17;
+        let gridRows = 15;
+        let foodCountMode = '1';
+        let selectedTheme = 'normal';
+        let selectedSnakeColor = 'theme';
+        let currentThemeConfig = null;
+
+        const SNAKE_COLORS = {
+            blue: { body: '#3367d6', head: '#4285F4' },
+            green: { body: '#2e7d32', head: '#34A853' },
+            red: { body: '#c62828', head: '#EA4335' },
+            yellow: { body: '#f57f17', head: '#FBBC05' },
+            purple: { body: '#7b1fa2', head: '#A142F4' },
+            pink: { body: '#c2185b', head: '#F442B5' },
+            cyan: { body: '#00838f', head: '#24C1E0' }
+        };
+
+        const THEMES = {
+            normal: {
+                name: 'Normal', icon: '🌿',
+                darkGrid: '#A2D149', lightGrid: '#AAD751',
+                snakeColor: '#4671EA', snakeHeadColor: '#4285F4',
+                bodyBg: '#4a752c', headerBg: '#4a752c', scoreBg: '#457026', boardBg: '#578a34'
+            },
+            night: {
+                name: 'Night', icon: '🌙',
+                darkGrid: '#1b2430', lightGrid: '#212d3b',
+                snakeColor: '#7c4dff', snakeHeadColor: '#b388ff',
+                bodyBg: '#0f172a', headerBg: '#0f172a', scoreBg: '#1e293b', boardBg: '#334155'
+            },
+            snow: {
+                name: 'Snow', icon: '❄️',
+                darkGrid: '#dbeafe', lightGrid: '#eff6ff',
+                snakeColor: '#0284c7', snakeHeadColor: '#38bdf8',
+                bodyBg: '#475569', headerBg: '#475569', scoreBg: '#334155', boardBg: '#64748b'
+            },
+            volcano: {
+                name: 'Volcano', icon: '🌋',
+                darkGrid: '#450a0a', lightGrid: '#7f1d1d',
+                snakeColor: '#f97316', snakeHeadColor: '#fb923c',
+                bodyBg: '#18181b', headerBg: '#18181b', scoreBg: '#27272a', boardBg: '#3f3f46'
+            },
+            desert: {
+                name: 'Desert', icon: '🏜️',
+                darkGrid: '#eab308', lightGrid: '#fde047',
+                snakeColor: '#b45309', snakeHeadColor: '#d97706',
+                bodyBg: '#854d0e', headerBg: '#854d0e', scoreBg: '#713f12', boardBg: '#a16207'
+            },
+            forest: {
+                name: 'Forest', icon: '🌲',
+                darkGrid: '#14532d', lightGrid: '#15803d',
+                snakeColor: '#84cc16', snakeHeadColor: '#a3e635',
+                bodyBg: '#064e3b', headerBg: '#064e3b', scoreBg: '#022c22', boardBg: '#047857'
+            },
+            ocean: {
+                name: 'Ocean', icon: '🌊',
+                darkGrid: '#0369a1', lightGrid: '#0284c7',
+                snakeColor: '#06b6d4', snakeHeadColor: '#22d3ee',
+                bodyBg: '#0c4a6e', headerBg: '#0c4a6e', scoreBg: '#075985', boardBg: '#0284c7'
+            },
+            candy: {
+                name: 'Candy', icon: '🍭',
+                darkGrid: '#fbcfe8', lightGrid: '#fce7f3',
+                snakeColor: '#ec4899', snakeHeadColor: '#f472b6',
+                bodyBg: '#831843', headerBg: '#831843', scoreBg: '#9d174d', boardBg: '#be185d'
+            },
+            cyberpunk: {
+                name: 'Cyber', icon: '👾',
+                darkGrid: '#311b92', lightGrid: '#4527a0',
+                snakeColor: '#00e676', snakeHeadColor: '#69f0ae',
+                bodyBg: '#12005e', headerBg: '#12005e', scoreBg: '#1a237e', boardBg: '#283593'
+            }
+        };
+
+        function getActiveTheme() {
+            if (selectedTheme === 'world') {
+                const available = ['normal', 'night', 'snow', 'volcano', 'desert', 'forest', 'ocean', 'candy', 'cyberpunk'];
+                const randomKey = available[Math.floor(Math.random() * available.length)];
+                return THEMES[randomKey];
+            }
+            return THEMES[selectedTheme] || THEMES.normal;
+        }
+
+        function applyThemeUI(theme) {
+            document.getElementById('body-theme').style.backgroundColor = theme.bodyBg;
+            document.getElementById('header-theme').style.backgroundColor = theme.headerBg;
+            document.getElementById('score-header-theme').style.backgroundColor = theme.scoreBg;
+            document.getElementById('board-frame-theme').style.backgroundColor = theme.boardBg;
+        }
+
+        let tileSize = 0;
+        let snake = [];
+        let dir = { x: 1, y: 0 };
+        let nextDir = { x: 1, y: 0 };
+        let apples = []; // Array storing all active food items
+        let score = 0;
+        let lastScore = 0;
+        let highScore = localStorage.getItem('google_snake_highscore') || 0;
+        
+        let gameRunning = false;
+        let isPaused = false;
+        let lastRenderTime = 0;
+        let moveAccumulator = 0;
+
+        highscoreDisplay.textContent = highScore;
+        if (startHighscoreDisplay) startHighscoreDisplay.textContent = highScore;
+
+        function updateHeaderFoodIcon() {
+            const emojis = { 
+                apple: '🍎', strawberry: '🍓', watermelon: '🍉', orange: '🍊',
+                lemon: '🍋', banana: '🍌', pineapple: '🍍', grape: '🍇',
+                cherries: '🍒', peach: '🍑', coconut: '🥥', kiwi: '🥝',
+                eggplant: '🍆', carrot: '🥕', mushroom: '🍄', cheese: '🧀',
+                pizza: '🍕', donut: '🍩', burger: '🍔', taco: '🌮'
+            };
+            const currentEmoji = emojis[selectedFood] || '🍎';
+            foodScoreIcon.textContent = currentEmoji;
+            if (startLastScoreIcon) startLastScoreIcon.textContent = currentEmoji;
+            if (startBannerFoodIcon) startBannerFoodIcon.textContent = currentEmoji;
+        }
+
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const rect = container.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+            tileSize = Math.min(canvas.width / gridCols, canvas.height / gridRows);
+            draw();
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        function initGame() {
+            currentThemeConfig = getActiveTheme();
+            applyThemeUI(currentThemeConfig);
+
+            const startX = Math.floor(gridCols / 4);
+            const startY = Math.floor(gridRows / 2);
+
+            snake = [
+                { x: startX, y: startY },
+                { x: startX - 1, y: startY },
+                { x: startX - 2, y: startY }
+            ];
+
+            dir = { x: 1, y: 0 };
+            nextDir = { x: 1, y: 0 };
+            score = 0;
+            scoreDisplay.textContent = score;
+
+            apples = [];
+            maintainFoodCount();
+        }
+
+        function getTargetFoodCount() {
+            if (foodCountMode === '1') return 1;
+            if (foodCountMode === '3') return 3;
+            if (foodCountMode === '5') return 5;
+            if (foodCountMode === '10') return 10;
+            if (foodCountMode === 'shuffle') {
+                const choices = [1, 3, 5, 10];
+                return choices[Math.floor(Math.random() * choices.length)];
+            }
+            if (foodCountMode === 'explosion') return 16;
+            return 1;
+        }
+
+        function maintainFoodCount() {
+            let targetCount = (apples.length === 0) ? getTargetFoodCount() : 1;
+            if (foodCountMode !== 'shuffle' && foodCountMode !== 'explosion') {
+                targetCount = parseInt(foodCountMode, 10);
+            }
+
+            const maxAvailableCells = (gridCols * gridRows) - snake.length;
+            const desiredTotal = (foodCountMode === 'shuffle' || foodCountMode === 'explosion') 
+                ? Math.min(maxAvailableCells, apples.length + (foodCountMode === 'explosion' ? 16 : 1))
+                : Math.min(maxAvailableCells, targetCount);
+
+            while (apples.length < desiredTotal) {
+                let valid = false;
+                let newApple = { x: 0, y: 0 };
+                let attempts = 0;
+                while (!valid && attempts < 500) {
+                    attempts++;
+                    newApple.x = Math.floor(Math.random() * gridCols);
+                    newApple.y = Math.floor(Math.random() * gridRows);
+                    const onSnake = snake.some(seg => seg.x === newApple.x && seg.y === newApple.y);
+                    const onExistingApple = apples.some(a => a.x === newApple.x && a.y === newApple.y);
+                    valid = !onSnake && !onExistingApple;
+                }
+                if (valid) {
+                    apples.push(newApple);
+                } else {
+                    break;
+                }
+            }
+        }
+
+        function setDirection(dx, dy) {
+            if (dir.x + dx === 0 && dir.y + dy === 0) return;
+            if (nextDir.x !== dx || nextDir.y !== dy) {
+                sound.playTurnSound();
+            }
+            nextDir = { x: dx, y: dy };
+        }
+
+        window.addEventListener('keydown', (e) => {
+            if (!gameRunning) return;
+            switch (e.key) {
+                case 'ArrowUp': case 'w': case 'W': setDirection(0, -1); e.preventDefault(); break;
+                case 'ArrowDown': case 's': case 'S': setDirection(0, 1); e.preventDefault(); break;
+                case 'ArrowLeft': case 'a': case 'A': setDirection(-1, 0); e.preventDefault(); break;
+                case 'ArrowRight': case 'd': case 'D': setDirection(1, 0); e.preventDefault(); break;
+                case ' ': togglePause(); e.preventDefault(); break;
+            }
+        });
+
+        // Touch Control Listeners
+        document.getElementById('btn-up').addEventListener('click', () => setDirection(0, -1));
+        document.getElementById('btn-down').addEventListener('click', () => setDirection(0, 1));
+        document.getElementById('btn-left').addEventListener('click', () => setDirection(-1, 0));
+        document.getElementById('btn-right').addEventListener('click', () => setDirection(1, 0));
+
+        function update() {
+            dir = nextDir;
+            let head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+            // Boundary Check
+            if (head.x < 0 || head.x >= gridCols || head.y < 0 || head.y >= gridRows) {
+                gameOver();
+                return;
+            }
+
+            // Self Collision Logic
+            if (snake.some(seg => seg.x === head.x && seg.y === head.y)) {
+                gameOver();
+                return;
+            }
+
+            snake.unshift(head);
+
+            // Check collision with any apple on the board
+            const eatenIndex = apples.findIndex(a => a.x === head.x && a.y === head.y);
+
+            if (eatenIndex !== -1) {
+                // Remove eaten apple
+                apples.splice(eatenIndex, 1);
+                score++;
+                scoreDisplay.textContent = score;
+                if (score > highScore) {
+                    highScore = score;
+                    highscoreDisplay.textContent = highScore;
+                    localStorage.setItem('google_snake_highscore', highScore);
+                }
+                sound.playEatSound();
+                maintainFoodCount();
+            } else {
+                snake.pop();
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const theme = currentThemeConfig || THEMES.normal;
+
+            const boardWidth = gridCols * tileSize;
+            const boardHeight = gridRows * tileSize;
+            const offsetX = (canvas.width - boardWidth) / 2;
+            const offsetY = (canvas.height - boardHeight) / 2;
+
+            // Checkerboard Grid Rendering
+            for (let r = 0; r < gridRows; r++) {
+                for (let c = 0; c < gridCols; c++) {
+                    ctx.fillStyle = (r + c) % 2 === 0 ? theme.lightGrid : theme.darkGrid;
+                    ctx.fillRect(offsetX + c * tileSize, offsetY + r * tileSize, tileSize, tileSize);
+                }
+            }
+
+            // Determine base snake colors
+            let snakeBodyColor = theme.snakeColor;
+            let snakeHeadColor = theme.snakeHeadColor;
+            if (selectedSnakeColor !== 'theme' && selectedSnakeColor !== 'rainbow' && SNAKE_COLORS[selectedSnakeColor]) {
+                snakeBodyColor = SNAKE_COLORS[selectedSnakeColor].body;
+                snakeHeadColor = SNAKE_COLORS[selectedSnakeColor].head;
+            }
+
+            // Render all active Apples / Food Items
+            apples.forEach(apple => {
+                const foodX = offsetX + apple.x * tileSize + tileSize / 2;
+                const foodY = offsetY + apple.y * tileSize + tileSize / 2;
+                const radius = tileSize * 0.4;
+
+                if (selectedFood === 'apple') {
+                    ctx.beginPath();
+                    ctx.arc(foodX, foodY, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = '#E74C3C';
+                    ctx.fill();
+
+                    // Leaf
+                    ctx.beginPath();
+                    ctx.ellipse(foodX + radius * 0.3, foodY - radius * 0.85, radius * 0.35, radius * 0.18, -Math.PI / 4, 0, Math.PI * 2);
+                    ctx.fillStyle = '#2ECC71';
+                    ctx.fill();
+                } else {
+                    ctx.font = `${tileSize * 0.8}px sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    const foodEmojis = { 
+                        strawberry: '🍓', watermelon: '🍉', orange: '🍊',
+                        lemon: '🍋', banana: '🍌', pineapple: '🍍', grape: '🍇',
+                        cherries: '🍒', peach: '🍑', coconut: '🥥', kiwi: '🥝',
+                        eggplant: '🍆', carrot: '🥕', mushroom: '🍄', cheese: '🧀',
+                        pizza: '🍕', donut: '🍩', burger: '🍔', taco: '🌮'
+                    };
+                    ctx.fillText(foodEmojis[selectedFood] || '🍎', foodX, foodY);
+                }
+            });
+
+            // Render Snake Body & Segment Smoothness
+            for (let i = snake.length - 1; i >= 0; i--) {
+                const seg = snake[i];
+                const x = offsetX + seg.x * tileSize;
+                const y = offsetY + seg.y * tileSize;
+
+                if (selectedSnakeColor === 'rainbow') {
+                    const hue = (i * 25 + Date.now() / 15) % 360;
+                    ctx.fillStyle = `hsl(${hue}, 85%, 55%)`;
+                } else {
+                    ctx.fillStyle = (i === 0) ? snakeHeadColor : snakeBodyColor;
+                }
+
+                if (i === 0) {
+                    drawRoundedHead(x, y, tileSize, dir);
+                    drawEyes(x, y, tileSize, dir);
+                } else {
+                    const pad = tileSize * 0.05;
+                    drawRoundedRect(x + pad, y + pad, tileSize - pad * 2, tileSize - pad * 2, tileSize * 0.25);
+                }
+            }
+        }
+
+        function drawRoundedHead(x, y, size, direction) {
+            const pad = size * 0.04;
+            const rx = x + pad;
+            const ry = y + pad;
+            const w = size - pad * 2;
+            const h = size - pad * 2;
+            const r = size * 0.42;
+
+            ctx.beginPath();
+            if (direction.x === 1) ctx.roundRect(rx, ry, w, h, [0, r, r, 0]);
+            else if (direction.x === -1) ctx.roundRect(rx, ry, w, h, [r, 0, 0, r]);
+            else if (direction.y === -1) ctx.roundRect(rx, ry, w, h, [r, r, 0, 0]);
+            else ctx.roundRect(rx, ry, w, h, [0, 0, r, r]);
+            ctx.fill();
+        }
+
+        function drawEyes(x, y, size, direction) {
+            const eyeRadius = size * 0.16;
+            const pupilRadius = size * 0.08;
+            let eye1 = { x: 0, y: 0 }, eye2 = { x: 0, y: 0 }, pupilOffset = { x: 0, y: 0 };
+
+            if (direction.x === 1) {
+                eye1 = { x: x + size * 0.65, y: y + size * 0.28 };
+                eye2 = { x: x + size * 0.65, y: y + size * 0.72 };
+                pupilOffset = { x: size * 0.04, y: 0 };
+            } else if (direction.x === -1) {
+                eye1 = { x: x + size * 0.35, y: y + size * 0.28 };
+                eye2 = { x: x + size * 0.35, y: y + size * 0.72 };
+                pupilOffset = { x: -size * 0.04, y: 0 };
+            } else if (direction.y === -1) {
+                eye1 = { x: x + size * 0.28, y: y + size * 0.35 };
+                eye2 = { x: x + size * 0.72, y: y + size * 0.35 };
+                pupilOffset = { x: 0, y: -size * 0.04 };
+            } else {
+                eye1 = { x: x + size * 0.28, y: y + size * 0.65 };
+                eye2 = { x: x + size * 0.72, y: y + size * 0.65 };
+                pupilOffset = { x: 0, y: size * 0.04 };
+            }
+
+            ctx.fillStyle = 'white';
+            ctx.beginPath();
+            ctx.arc(eye1.x, eye1.y, eyeRadius, 0, Math.PI * 2);
+            ctx.arc(eye2.x, eye2.y, eyeRadius, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = '#1A1A1A';
+            ctx.beginPath();
+            ctx.arc(eye1.x + pupilOffset.x, eye1.y + pupilOffset.y, pupilRadius, 0, Math.PI * 2);
+            ctx.arc(eye2.x + pupilOffset.x, eye2.y + pupilOffset.y, pupilRadius, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        function drawRoundedRect(x, y, w, h, r) {
+            ctx.beginPath();
+            if (ctx.roundRect) ctx.roundRect(x, y, w, h, r);
+            else ctx.rect(x, y, w, h);
+            ctx.fill();
+        }
+
+        function gameLoop(timestamp) {
+            if (!gameRunning) return;
+            if (!lastRenderTime) lastRenderTime = timestamp;
+            const delta = timestamp - lastRenderTime;
+            lastRenderTime = timestamp;
+
+            if (!isPaused) {
+                moveAccumulator += delta;
+                if (moveAccumulator >= speedMs) {
+                    update();
+                    moveAccumulator = 0;
+                }
+            }
+
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function startGame() {
+            sound.init();
+            initGame();
+            gameRunning = true;
+            isPaused = false;
+            lastRenderTime = 0;
+            moveAccumulator = 0;
+
+            startOverlay.classList.add('hidden');
+            gameoverOverlay.classList.add('hidden');
+            pauseOverlay.classList.add('hidden');
+
+            resizeCanvas();
+            requestAnimationFrame(gameLoop);
+        }
+
+        function gameOver() {
+            sound.playDieSound();
+            gameRunning = false;
+            lastScore = score;
+
+            // Update scores on HUD & Home Screen Dialog
+            if (startLastScoreDisplay) startLastScoreDisplay.textContent = lastScore;
+            if (startHighscoreDisplay) startHighscoreDisplay.textContent = highScore;
+            updateHeaderFoodIcon();
+
+            // Return to start overlay home screen immediately
+            gameoverOverlay.classList.add('hidden');
+            startOverlay.classList.remove('hidden');
+            draw();
+        }
+
+        function togglePause() {
+            if (!gameRunning) return;
+            isPaused = !isPaused;
+            if (isPaused) pauseOverlay.classList.remove('hidden');
+            else pauseOverlay.classList.add('hidden');
+        }
+
+        document.getElementById('start-btn').addEventListener('click', startGame);
+        document.getElementById('restart-btn').addEventListener('click', startGame);
+        document.getElementById('pause-restart-btn').addEventListener('click', () => {
+            gameRunning = false;
+            pauseOverlay.classList.add('hidden');
+            startOverlay.classList.remove('hidden');
+            if (startLastScoreDisplay) startLastScoreDisplay.textContent = lastScore;
+            if (startHighscoreDisplay) startHighscoreDisplay.textContent = highScore;
+            draw();
+        });
+        document.getElementById('resume-btn').addEventListener('click', togglePause);
+
+        // Settings Modal Open/Close Controls
+        document.getElementById('open-settings-btn').addEventListener('click', () => settingsModal.classList.remove('hidden'));
+        document.getElementById('close-settings-btn').addEventListener('click', () => settingsModal.classList.add('hidden'));
+
+        // Sound Toggle Button
+        document.getElementById('sound-btn').addEventListener('click', () => {
+            sound.enabled = !sound.enabled;
+            document.getElementById('sound-on-icon').classList.toggle('hidden', !sound.enabled);
+            document.getElementById('sound-off-icon').classList.toggle('hidden', sound.enabled);
+        });
+
+        // Food Option Selector Logic
+        document.querySelectorAll('.food-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.food-opt').forEach(b => b.classList.remove('active'));
+                const target = e.currentTarget;
+                target.classList.add('active');
+                selectedFood = target.getAttribute('data-food');
+                document.getElementById('bar-food-icon').textContent = target.textContent;
+                updateHeaderFoodIcon();
+            });
+        });
+
+        // Speed Option Selector Logic
+        document.querySelectorAll('.speed-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.speed-opt').forEach(b => b.classList.remove('active'));
+                const target = e.currentTarget;
+                target.classList.add('active');
+                const spd = target.getAttribute('data-speed');
+                if (spd === 'slow') speedMs = 160;
+                else if (spd === 'fast') speedMs = 80;
+                else if (spd === 'sonic') speedMs = 45;
+                else speedMs = 120;
+                document.getElementById('bar-speed-icon').textContent = target.querySelector('span').textContent;
+            });
+        });
+
+        // Map Size Option Selector Logic
+        document.querySelectorAll('.size-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.size-opt').forEach(b => b.classList.remove('active'));
+                const target = e.currentTarget;
+                target.classList.add('active');
+                const sz = target.getAttribute('data-size');
+                if (sz === 'tiny') { gridCols = 9; gridRows = 7; }
+                else if (sz === 'small') { gridCols = 13; gridRows = 11; }
+                else if (sz === 'large') { gridCols = 21; gridRows = 19; }
+                else { gridCols = 17; gridRows = 15; }
+                document.getElementById('bar-size-icon').textContent = target.querySelector('span').textContent;
+                resizeCanvas();
+            });
+        });
+
+        // Food Count Option Selector Logic
+        document.querySelectorAll('.count-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.count-opt').forEach(b => b.classList.remove('active'));
+                const target = e.currentTarget;
+                target.classList.add('active');
+                foodCountMode = target.getAttribute('data-count');
+            });
+        });
+
+        // Theme Option Selector Logic
+        document.querySelectorAll('.theme-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.theme-opt').forEach(b => b.classList.remove('active'));
+                const target = e.currentTarget;
+                target.classList.add('active');
+                selectedTheme = target.getAttribute('data-theme');
+                document.getElementById('bar-theme-icon').textContent = target.querySelector('span').textContent;
+
+                currentThemeConfig = getActiveTheme();
+                applyThemeUI(currentThemeConfig);
+                draw();
+            });
+        });
+
+        // Snake Color Selector Logic
+        document.querySelectorAll('.snake-color-opt').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.snake-color-opt').forEach(b => b.classList.remove('active'));
+                const target = e.currentTarget;
+                target.classList.add('active');
+                selectedSnakeColor = target.getAttribute('data-color');
+                draw();
+            });
+        });
+
+        window.onload = () => {
+            currentThemeConfig = THEMES.normal;
+            applyThemeUI(currentThemeConfig);
+            resizeCanvas();
+            draw();
+        };
+    </script>
+</body>
+</html>
