@@ -108,89 +108,84 @@
         <canvas id="game-canvas" class="w-full h-full block"></canvas>
 
         <!-- Authentic 1:1 Google Snake Start Dialog -->
-        <div id="start-overlay" class="absolute inset-0 bg-black/20 flex flex-col items-center justify-center p-4 z-10">
-            <div class="flex flex-col items-center max-w-xs sm:max-w-sm w-full">
-                <!-- Main Blue Card -->
-                <div class="bg-[#4285F4] rounded-3xl p-5 flex flex-col items-center w-full text-center shadow-2xl relative border-2 border-white/20 mb-3">
-                    
-                    <!-- Authentic Top Stats Bar (Trophy / High Score & Last Round Food / Score) -->
-                    <div class="w-full flex items-center justify-between px-3 py-1.5 mb-2 bg-[#3367d6] rounded-2xl text-white font-black text-lg border border-white/10 shadow-inner">
-                        <!-- High Score / Trophy -->
-                        <div class="flex items-center space-x-2" title="Highest Streak">
-                            <span class="text-2xl drop-shadow">🏆</span>
-                            <span id="start-highscore-display" class="text-xl">0</span>
-                        </div>
-
-                        <!-- Last Score with Selected Food Icon -->
-                        <div class="flex items-center space-x-2" title="Last Round Score">
-                            <span id="start-last-score-icon" class="text-2xl drop-shadow">🍎</span>
-                            <span id="start-last-score-display" class="text-xl">0</span>
-                        </div>
+        <div id="start-overlay" class="absolute inset-0 bg-black/30 backdrop-blur-[2px] flex flex-col items-center justify-center p-3 sm:p-4 z-10">
+            <div class="bg-[#4285F4] rounded-2xl sm:rounded-3xl p-3 sm:p-5 max-w-xs sm:max-w-sm w-full text-center shadow-2xl flex flex-col items-center border-4 border-[#356ac3] relative overflow-hidden">
+                <!-- Top Scores & Stats Header Bar Inside Start Dialog -->
+                <div class="w-full bg-[#356ac3] rounded-xl px-4 py-2 mb-3 flex justify-between items-center text-white font-bold text-lg sm:text-xl">
+                    <!-- Trophy (High Score) -->
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xl sm:text-2xl">🏆</span>
+                        <span id="start-highscore-display">0</span>
                     </div>
 
-                    <!-- Authentic Google Snake Banner Art -->
-                    <div class="w-full flex justify-center items-center py-2 mb-3">
-                        <div class="w-full h-28 bg-[#3b78e7] rounded-2xl flex items-center justify-center shadow-inner relative overflow-hidden border-2 border-white/20">
-                            <!-- Red Apple Icon -->
-                            <div id="start-banner-food-icon" class="absolute right-6 top-3 text-2xl drop-shadow-md z-10">🍎</div>
-                            
-                            <!-- Animated Snake Crawling Side to Side across the banner -->
-                            <svg class="w-full h-full absolute inset-0" viewBox="0 0 320 112" preserveAspectRatio="none">
-                                <defs>
-                                    <style>
-                                        @keyframes snakeCrawl {
-                                            0% { transform: translateX(-160px); }
-                                            100% { transform: translateX(340px); }
-                                        }
-                                        .animating-snake {
-                                            animation: snakeCrawl 4s linear infinite;
-                                        }
-                                    </style>
-                                </defs>
-
-                                <!-- Moving Group -->
-                                <g class="animating-snake">
-                                    <!-- Waving Body -->
-                                    <path d="M -80 56 Q -60 30 -40 56 T 0 56 T 40 56" 
-                                          fill="none" stroke="#4671EA" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
-                                    
-                                    <!-- Snake Head (Side Profile) -->
-                                    <circle cx="40" cy="56" r="13" fill="#4285F4"/>
-                                    
-                                    <!-- Eye (Side Facing Right) -->
-                                    <circle cx="46" cy="51" r="4" fill="white"/>
-                                    <circle cx="48" cy="51" r="2" fill="black"/>
-
-                                    <!-- Cute Tongue -->
-                                    <path d="M 52 59 Q 60 60 62 57 M 60 60 L 64 63" stroke="#e74c3c" stroke-width="2.5" fill="none" stroke-linecap="round"/>
-                                </g>
-                            </svg>
-                        </div>
-                    </div>
-
-                    <!-- Quick Active Settings Indicators Bar -->
-                    <div class="bg-[#3367d6] rounded-full px-4 py-1.5 flex items-center justify-around w-full shadow-inner border border-white/20 text-xl">
-                        <span id="bar-food-icon" title="Fruit">🍎</span>
-                        <span id="bar-speed-icon" title="Speed">🐰</span>
-                        <span id="bar-size-icon" title="Map Size">⬛</span>
-                        <span id="bar-theme-icon" title="Theme">🌿</span>
+                    <!-- Selected Food Icon & Last Game Score -->
+                    <div class="flex items-center space-x-2">
+                        <span id="start-last-score-icon" class="text-xl sm:text-2xl">🍎</span>
+                        <span id="start-last-score-display">0</span>
                     </div>
                 </div>
 
-                <!-- Action Buttons below the main start UI -->
-                <div class="flex flex-col space-y-2 w-full">
-                    <!-- 1st: PLAY Button -->
-                    <button id="start-btn" class="btn-hover-effect bg-[#4285F4] hover:bg-[#3367d6] text-white py-3 px-6 rounded-full font-black text-lg tracking-wide shadow-lg w-full flex items-center justify-center space-x-2 border-2 border-white/20">
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                <!-- Banner with Animated Side-to-Side Snake -->
+                <div class="relative w-full h-24 sm:h-28 bg-[#3b78e7] rounded-xl mb-4 overflow-hidden flex items-center">
+                    <svg class="absolute inset-0 w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
+                        <!-- Centered Food Item with Animated Eating & Re-spawning Effect -->
+                        <g class="start-food-loop">
+                            <!-- SVG Apple centered at X: 150, Y: 50 -->
+                            <circle cx="150" cy="50" r="14" fill="#E74C3C"/>
+                            <ellipse cx="154" cy="38" rx="5" ry="2.5" fill="#2ECC71" transform="rotate(-30 154 38)"/>
+                        </g>
+
+                        <!-- Horizontal Sliding Track Animation -->
+                        <g class="snake-slider">
+                            <!-- Snake Body Segments -->
+                            <path d="M -80,50 Q -60,20 -40,50 T 0,50 T 40,50 T 80,50" fill="none" stroke="#2ecc71" stroke-width="18" stroke-linecap="round"/>
+                            <!-- Eye -->
+                            <circle cx="75" cy="44" r="3.5" fill="#111"/>
+                            <!-- Tongue -->
+                            <path d="M 88,50 L 98,50 M 98,50 L 103,46 M 98,50 L 103,54" fill="none" stroke="#e74c3c" stroke-width="2.5" stroke-linecap="round"/>
+                        </g>
+                    </svg>
+
+                    <style>
+                        @keyframes crawlSideToSide {
+                            0% { transform: translateX(-120px); }
+                            100% { transform: translateX(340px); }
+                        }
+                        @keyframes eatFoodLoop {
+                            0%, 46% { opacity: 1; transform: scale(1); }
+                            47% { opacity: 0; transform: scale(0.3); }
+                            90% { opacity: 0; transform: scale(0.3); }
+                            95%, 100% { opacity: 1; transform: scale(1); }
+                        }
+                        .snake-slider {
+                            animation: crawlSideToSide 3.5s linear infinite;
+                        }
+                        .start-food-loop {
+                            transform-origin: 150px 50px;
+                            animation: eatFoodLoop 3.5s ease-in-out infinite;
+                        }
+                    </style>
+
+                    <!-- Food Display Icon inside Banner -->
+                    <div id="start-banner-food-icon" class="absolute right-3 bottom-2 text-2xl filter drop-shadow opacity-60">
+                        🍎
+                    </div>
+                </div>
+
+                <!-- Action Controls Section Below Dialog (Play 1st, Settings 2nd) -->
+                <div class="w-full space-y-2">
+                    <!-- 1st: PLAY BUTTON (Blue) -->
+                    <button id="start-btn" class="btn-hover-effect bg-[#4285F4] hover:bg-[#3b78e7] border-2 border-white/40 text-white font-black text-xl py-3 px-8 rounded-full shadow-lg w-full flex items-center justify-center space-x-3 tracking-wide">
+                        <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24">
                             <path d="M8 5v14l11-7z"/>
                         </svg>
                         <span>PLAY</span>
                     </button>
 
-                    <!-- 2nd: SETTINGS Button -->
-                    <button id="open-settings-btn" class="btn-hover-effect bg-[#4285F4] hover:bg-[#3367d6] text-white py-3 px-6 rounded-full font-bold text-base tracking-wide shadow-lg w-full flex items-center justify-center space-x-2 border-2 border-white/20" title="Settings">
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/>
+                    <!-- 2nd: SETTINGS BUTTON -->
+                    <button id="open-settings-btn" class="btn-hover-effect bg-[#356ac3] hover:bg-[#2d5aa8] text-white font-bold text-sm py-2 px-6 rounded-full shadow-md w-full flex items-center justify-center space-x-2">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
                         </svg>
                         <span>SETTINGS</span>
                     </button>
@@ -198,206 +193,213 @@
             </div>
         </div>
 
-        <!-- Settings Popup Dialog (Authentic Google Snake Options Grid) -->
-        <div id="settings-modal" class="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center p-4 z-30 hidden">
-            <div class="bg-[#385922] border-4 border-[#578a34] rounded-3xl p-5 max-w-sm w-full text-white shadow-2xl flex flex-col space-y-4 max-h-[90vh] overflow-y-auto">
-                <h3 class="text-center font-black text-xl tracking-wide uppercase">Game Settings</h3>
+        <!-- Settings Popup Dialog (Positioned strictly inside the board frame) -->
+        <div id="settings-modal" class="absolute inset-0 bg-black/60 backdrop-blur-[2px] flex items-center justify-center p-2 sm:p-4 z-30 hidden">
+            <div class="bg-[#385922] border-4 border-[#578a34] rounded-2xl sm:rounded-3xl p-3 sm:p-4 w-full h-full max-w-[95%] max-h-[95%] text-white shadow-2xl flex flex-col justify-between overflow-hidden">
+                <!-- Header (Fixed) -->
+                <h3 class="text-center font-black text-base sm:text-lg tracking-wide uppercase shrink-0 pb-1.5 border-b border-white/10">Game Settings</h3>
 
-                <!-- Row 1: Food Type -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Fruit / Food</label>
-                    <div class="grid grid-cols-4 gap-2 text-2xl max-h-36 overflow-y-auto pr-1">
-                        <button class="setting-option food-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="apple">🍎</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="strawberry">🍓</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="watermelon">🍉</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="orange">🍊</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="lemon">🍋</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="banana">🍌</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="pineapple">🍍</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="grape">🍇</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="cherries">🍒</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="peach">🍑</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="coconut">🥥</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="kiwi">🥝</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="eggplant">🍆</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="carrot">🥕</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="mushroom">🍄</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="cheese">🧀</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="pizza">🍕</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="donut">🍩</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="burger">🍔</button>
-                        <button class="setting-option food-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center" data-food="taco">🌮</button>
+                <!-- Scrollable Settings Rows Body -->
+                <div class="overflow-y-auto space-y-2.5 my-1.5 pr-1 flex-1 text-xs">
+                    <!-- Row 1: Food Type -->
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Fruit / Food</label>
+                        <div class="grid grid-cols-4 sm:grid-cols-5 gap-1.5 text-lg sm:text-xl max-h-24 overflow-y-auto pr-1">
+                            <button class="setting-option food-opt active bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="apple">🍎</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="strawberry">🍓</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="watermelon">🍉</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="orange">🍊</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="lemon">🍋</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="banana">🍌</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="pineapple">🍍</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="grape">🍇</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="cherries">🍒</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="peach">🍑</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="coconut">🥥</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="kiwi">🥝</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="eggplant">🍆</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="carrot">🥕</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="mushroom">🍄</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="cheese">🧀</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="pizza">🍕</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="donut">🍩</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="burger">🍔</button>
+                            <button class="setting-option food-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center" data-food="taco">🌮</button>
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Speed -->
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Speed</label>
+                        <div class="grid grid-cols-4 gap-1.5 text-center text-[11px] font-bold">
+                            <button class="setting-option speed-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-speed="slow">
+                                <span class="text-base mb-0.5">🐢</span>
+                                <span>Slow</span>
+                            </button>
+                            <button class="setting-option speed-opt active bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-speed="normal">
+                                <span class="text-base mb-0.5">🐰</span>
+                                <span>Normal</span>
+                            </button>
+                            <button class="setting-option speed-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-speed="fast">
+                                <span class="text-base mb-0.5">⚡</span>
+                                <span>Fast</span>
+                            </button>
+                            <button class="setting-option speed-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-speed="sonic">
+                                <span class="text-base mb-0.5">🚀</span>
+                                <span>Sonic</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Grid Size -->
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Map Size</label>
+                        <div class="grid grid-cols-4 gap-1.5 text-center text-[11px] font-bold">
+                            <button class="setting-option size-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-size="tiny">
+                                <span class="text-base mb-0.5">▫️</span>
+                                <span>Tiny</span>
+                            </button>
+                            <button class="setting-option size-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-size="small">
+                                <span class="text-base mb-0.5">◻️</span>
+                                <span>Small</span>
+                            </button>
+                            <button class="setting-option size-opt active bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-size="normal">
+                                <span class="text-base mb-0.5">⬛</span>
+                                <span>Normal</span>
+                            </button>
+                            <button class="setting-option size-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-size="large">
+                                <span class="text-base mb-0.5">🔳</span>
+                                <span>Large</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Row 4: Food Count / Multi-Food Spawner -->
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Food Spawn Count</label>
+                        <div class="grid grid-cols-3 gap-1.5 text-center text-[11px] font-bold">
+                            <button class="setting-option count-opt active bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-count="1">
+                                <span class="text-base mb-0.5">1️⃣</span>
+                                <span>1 Food</span>
+                            </button>
+                            <button class="setting-option count-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-count="3">
+                                <span class="text-base mb-0.5">3️⃣</span>
+                                <span>3 Foods</span>
+                            </button>
+                            <button class="setting-option count-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-count="5">
+                                <span class="text-base mb-0.5">5️⃣</span>
+                                <span>5 Foods</span>
+                            </button>
+                            <button class="setting-option count-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-count="10">
+                                <span class="text-base mb-0.5">🔟</span>
+                                <span>10 Foods</span>
+                            </button>
+                            <button class="setting-option count-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-count="shuffle">
+                                <span class="text-base mb-0.5">🔀</span>
+                                <span>Shuffled</span>
+                            </button>
+                            <button class="setting-option count-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-count="explosion">
+                                <span class="text-base mb-0.5">💥</span>
+                                <span>Explosion</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Row 5: Themes -->
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Theme</label>
+                        <div class="grid grid-cols-4 gap-1.5 text-center text-[11px] font-bold max-h-24 overflow-y-auto pr-1">
+                            <button class="setting-option theme-opt active bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="normal">
+                                <span class="text-base mb-0.5">🌿</span>
+                                <span>Normal</span>
+                            </button>
+                            <button class="setting-option theme-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="night">
+                                <span class="text-base mb-0.5">🌙</span>
+                                <span>Night</span>
+                            </button>
+                            <button class="setting-option theme-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="snow">
+                                <span class="text-base mb-0.5">❄️</span>
+                                <span>Snow</span>
+                            </button>
+                            <button class="setting-option theme-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="volcano">
+                                <span class="text-base mb-0.5">🌋</span>
+                                <span>Volcano</span>
+                            </button>
+                            <button class="setting-option theme-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="desert">
+                                <span class="text-base mb-0.5">🏜️</span>
+                                <span>Desert</span>
+                            </button>
+                            <button class="setting-option theme-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="forest">
+                                <span class="text-base mb-0.5">🌲</span>
+                                <span>Forest</span>
+                            </button>
+                            <button class="setting-option theme-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="world">
+                                <span class="text-base mb-0.5">🌍</span>
+                                <span>World</span>
+                            </button>
+                            <button class="setting-option theme-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="ocean">
+                                <span class="text-base mb-0.5">🌊</span>
+                                <span>Ocean</span>
+                            </button>
+                            <button class="setting-option theme-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="candy">
+                                <span class="text-base mb-0.5">🍭</span>
+                                <span>Candy</span>
+                            </button>
+                            <button class="setting-option theme-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex flex-col items-center" data-theme="cyberpunk">
+                                <span class="text-base mb-0.5">👾</span>
+                                <span>Cyber</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Row 6: Snake Color Customization -->
+                    <div>
+                        <label class="block text-[10px] sm:text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Snake Color</label>
+                        <div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5 text-center text-[11px] font-bold">
+                            <button class="setting-option snake-color-opt active bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="theme">
+                                <div class="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-blue-500 via-green-500 to-red-500"></div>
+                                <span>Auto</span>
+                            </button>
+                            <button class="setting-option snake-color-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="rainbow">
+                                <div class="w-3.5 h-3.5 rounded-full bg-gradient-to-r from-red-500 via-yellow-400 to-indigo-500 animate-pulse"></div>
+                                <span>Rainbow</span>
+                            </button>
+                            <button class="setting-option snake-color-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="blue">
+                                <div class="w-3.5 h-3.5 rounded-full bg-[#4285F4]"></div>
+                                <span>Blue</span>
+                            </button>
+                            <button class="setting-option snake-color-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="green">
+                                <div class="w-3.5 h-3.5 rounded-full bg-[#34A853]"></div>
+                                <span>Green</span>
+                            </button>
+                            <button class="setting-option snake-color-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="red">
+                                <div class="w-3.5 h-3.5 rounded-full bg-[#EA4335]"></div>
+                                <span>Red</span>
+                            </button>
+                            <button class="setting-option snake-color-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="yellow">
+                                <div class="w-3.5 h-3.5 rounded-full bg-[#FBBC05]"></div>
+                                <span>Yellow</span>
+                            </button>
+                            <button class="setting-option snake-color-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="purple">
+                                <div class="w-3.5 h-3.5 rounded-full bg-[#A142F4]"></div>
+                                <span>Purple</span>
+                            </button>
+                            <button class="setting-option snake-color-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="pink">
+                                <div class="w-3.5 h-3.5 rounded-full bg-[#F442B5]"></div>
+                                <span>Pink</span>
+                            </button>
+                            <button class="setting-option snake-color-opt bg-white/10 p-1 rounded-xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="cyan">
+                                <div class="w-3.5 h-3.5 rounded-full bg-[#24C1E0]"></div>
+                                <span>Cyan</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Row 2: Speed -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Speed</label>
-                    <div class="grid grid-cols-4 gap-2 text-center text-xs font-bold">
-                        <button class="setting-option speed-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-speed="slow">
-                            <span class="text-xl mb-1">🐢</span>
-                            <span>Slow</span>
-                        </button>
-                        <button class="setting-option speed-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-speed="normal">
-                            <span class="text-xl mb-1">🐰</span>
-                            <span>Normal</span>
-                        </button>
-                        <button class="setting-option speed-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-speed="fast">
-                            <span class="text-xl mb-1">⚡</span>
-                            <span>Fast</span>
-                        </button>
-                        <button class="setting-option speed-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-speed="sonic">
-                            <span class="text-xl mb-1">🚀</span>
-                            <span>Sonic</span>
-                        </button>
-                    </div>
+                <!-- Footer Action Button (Always Visible) -->
+                <div class="shrink-0 pt-1.5 border-t border-white/10">
+                    <button id="close-settings-btn" class="btn-hover-effect bg-[#4285F4] w-full py-2 rounded-full font-bold text-xs sm:text-sm tracking-wide shadow-md">CLOSE</button>
                 </div>
-
-                <!-- Row 3: Grid Size -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Map Size</label>
-                    <div class="grid grid-cols-4 gap-2 text-center text-xs font-bold">
-                        <button class="setting-option size-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-size="tiny">
-                            <span class="text-xl mb-1">▫️</span>
-                            <span>Tiny</span>
-                        </button>
-                        <button class="setting-option size-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-size="small">
-                            <span class="text-xl mb-1">◻️</span>
-                            <span>Small</span>
-                        </button>
-                        <button class="setting-option size-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-size="normal">
-                            <span class="text-xl mb-1">⬛</span>
-                            <span>Normal</span>
-                        </button>
-                        <button class="setting-option size-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-size="large">
-                            <span class="text-xl mb-1">🔳</span>
-                            <span>Large</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Row 4: Food Count / Multi-Food Spawner -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Food Spawn Count</label>
-                    <div class="grid grid-cols-3 gap-2 text-center text-xs font-bold">
-                        <button class="setting-option count-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="1">
-                            <span class="text-xl mb-1">1️⃣</span>
-                            <span>1 Food</span>
-                        </button>
-                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="3">
-                            <span class="text-xl mb-1">3️⃣</span>
-                            <span>3 Foods</span>
-                        </button>
-                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="5">
-                            <span class="text-xl mb-1">5️⃣</span>
-                            <span>5 Foods</span>
-                        </button>
-                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="10">
-                            <span class="text-xl mb-1">🔟</span>
-                            <span>10 Foods</span>
-                        </button>
-                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="shuffle">
-                            <span class="text-xl mb-1">🔀</span>
-                            <span>Shuffled</span>
-                        </button>
-                        <button class="setting-option count-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-count="explosion">
-                            <span class="text-xl mb-1">💥</span>
-                            <span>Explosion (>15)</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Row 5: Themes -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Theme</label>
-                    <div class="grid grid-cols-4 gap-2 text-center text-xs font-bold max-h-36 overflow-y-auto pr-1">
-                        <button class="setting-option theme-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="normal">
-                            <span class="text-xl mb-1">🌿</span>
-                            <span>Normal</span>
-                        </button>
-                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="night">
-                            <span class="text-xl mb-1">🌙</span>
-                            <span>Night</span>
-                        </button>
-                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="snow">
-                            <span class="text-xl mb-1">❄️</span>
-                            <span>Snow</span>
-                        </button>
-                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="volcano">
-                            <span class="text-xl mb-1">🌋</span>
-                            <span>Volcano</span>
-                        </button>
-                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="desert">
-                            <span class="text-xl mb-1">🏜️</span>
-                            <span>Desert</span>
-                        </button>
-                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="forest">
-                            <span class="text-xl mb-1">🌲</span>
-                            <span>Forest</span>
-                        </button>
-                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="world">
-                            <span class="text-xl mb-1">🌍</span>
-                            <span>World</span>
-                        </button>
-                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="ocean">
-                            <span class="text-xl mb-1">🌊</span>
-                            <span>Ocean</span>
-                        </button>
-                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="candy">
-                            <span class="text-xl mb-1">🍭</span>
-                            <span>Candy</span>
-                        </button>
-                        <button class="setting-option theme-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex flex-col items-center" data-theme="cyberpunk">
-                            <span class="text-xl mb-1">👾</span>
-                            <span>Cyber</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Row 6: Snake Color Customization -->
-                <div>
-                    <label class="block text-xs font-bold uppercase tracking-wider mb-1 text-green-200">Snake Color</label>
-                    <div class="grid grid-cols-4 gap-2 text-center text-xs font-bold">
-                        <button class="setting-option snake-color-opt active bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="theme">
-                            <div class="w-5 h-5 rounded-full bg-gradient-to-r from-blue-500 via-green-500 to-red-500"></div>
-                            <span>Auto</span>
-                        </button>
-                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="rainbow">
-                            <div class="w-5 h-5 rounded-full bg-gradient-to-r from-red-500 via-yellow-400 to-indigo-500 animate-pulse"></div>
-                            <span>Rainbow</span>
-                        </button>
-                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="blue">
-                            <div class="w-5 h-5 rounded-full bg-[#4285F4]"></div>
-                            <span>Blue</span>
-                        </button>
-                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="green">
-                            <div class="w-5 h-5 rounded-full bg-[#34A853]"></div>
-                            <span>Green</span>
-                        </button>
-                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="red">
-                            <div class="w-5 h-5 rounded-full bg-[#EA4335]"></div>
-                            <span>Red</span>
-                        </button>
-                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="yellow">
-                            <div class="w-5 h-5 rounded-full bg-[#FBBC05]"></div>
-                            <span>Yellow</span>
-                        </button>
-                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="purple">
-                            <div class="w-5 h-5 rounded-full bg-[#A142F4]"></div>
-                            <span>Purple</span>
-                        </button>
-                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="pink">
-                            <div class="w-5 h-5 rounded-full bg-[#F442B5]"></div>
-                            <span>Pink</span>
-                        </button>
-                        <button class="setting-option snake-color-opt bg-white/10 p-2 rounded-2xl border-2 border-transparent flex items-center justify-center space-x-1" data-color="cyan">
-                            <div class="w-5 h-5 rounded-full bg-[#24C1E0]"></div>
-                            <span>Cyan</span>
-                        </button>
-                    </div>
-                </div>
-
-                <button id="close-settings-btn" class="btn-hover-effect bg-[#4285F4] w-full py-2.5 rounded-full font-bold text-sm tracking-wide shadow-md mt-2">CLOSE</button>
             </div>
         </div>
 
@@ -1036,7 +1038,8 @@
                 const target = e.currentTarget;
                 target.classList.add('active');
                 selectedFood = target.getAttribute('data-food');
-                document.getElementById('bar-food-icon').textContent = target.textContent;
+                const foodIcon = document.getElementById('bar-food-icon');
+                if (foodIcon) foodIcon.textContent = target.textContent;
                 updateHeaderFoodIcon();
             });
         });
@@ -1052,7 +1055,8 @@
                 else if (spd === 'fast') speedMs = 80;
                 else if (spd === 'sonic') speedMs = 45;
                 else speedMs = 120;
-                document.getElementById('bar-speed-icon').textContent = target.querySelector('span').textContent;
+                const speedIcon = document.getElementById('bar-speed-icon');
+                if (speedIcon) speedIcon.textContent = target.querySelector('span').textContent;
             });
         });
 
@@ -1067,7 +1071,8 @@
                 else if (sz === 'small') { gridCols = 13; gridRows = 11; }
                 else if (sz === 'large') { gridCols = 21; gridRows = 19; }
                 else { gridCols = 17; gridRows = 15; }
-                document.getElementById('bar-size-icon').textContent = target.querySelector('span').textContent;
+                const sizeIcon = document.getElementById('bar-size-icon');
+                if (sizeIcon) sizeIcon.textContent = target.querySelector('span').textContent;
                 resizeCanvas();
             });
         });
@@ -1089,7 +1094,8 @@
                 const target = e.currentTarget;
                 target.classList.add('active');
                 selectedTheme = target.getAttribute('data-theme');
-                document.getElementById('bar-theme-icon').textContent = target.querySelector('span').textContent;
+                const themeIcon = document.getElementById('bar-theme-icon');
+                if (themeIcon) themeIcon.textContent = target.querySelector('span').textContent;
 
                 currentThemeConfig = getActiveTheme();
                 applyThemeUI(currentThemeConfig);
